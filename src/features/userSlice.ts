@@ -2,7 +2,10 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
 // import { fetchCount } from './counterAPI';
 
-
+interface USER {
+  displayName:string;
+  photoUrl:string;
+}
 
 export const userSlice = createSlice({
   name: 'user',
@@ -17,6 +20,10 @@ export const userSlice = createSlice({
     logout: (state) => {
       state.user={uid:'',photUrl:'',displayName:''};
     },
+    updateUserProfile:(state,actiion: payloadAction<USER>=>{
+      state.user.displayName = action.payload.displayName;
+      state.user.photoUrl = action.payload.photoUrl;
+    })
 
   },
  
