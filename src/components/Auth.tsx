@@ -4,6 +4,7 @@ import { updateUserProfile } from "../features/userSlice";
 import styles from "./Auth.module.css";
 import { auth, provider, storage } from "../firebase";
 
+// import
 import {
   Avatar,
   Button,
@@ -215,7 +216,6 @@ const Auth: React.FC = () => {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
               value={email}
               onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{
                 setEmail(e.target.value)}}
