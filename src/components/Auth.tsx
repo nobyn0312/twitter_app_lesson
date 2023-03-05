@@ -4,7 +4,6 @@ import { updateUserProfile } from "../features/userSlice";
 import styles from "./Auth.module.css";
 import { auth, provider, storage } from "../firebase";
 
-// import
 import {
   Avatar,
   Button,
@@ -24,23 +23,20 @@ import CameraIcon from "@material-ui/icons/Camera";
 import EmailIcon from "@material-ui/icons/Email";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-
 function getModalStyle() {
   const top = 50;
   const left = 50;
 
   return {
-    top:`${top}%`,
-    left:`${left}%`,
+    top: `${top}%`,
+    left: `${left}%`,
     transform: `translate(-${top}%, -${left}%)`,
   };
 }
-
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh',
+    height: "100vh",
   },
-
   modal: {
     outline: "none",
     position: "absolute",
@@ -50,27 +46,29 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(10),
   },
-
   image: {
-    backgroundImage: 'url(https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1858&q=80)',
-    backgroundRepeat: 'no-repeat',
+    backgroundImage:
+    'url(https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1858&q=80)',
+    backgroundRepeat: "no-repeat",
     backgroundColor:
-      theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+      theme.palette.type === "light"
+        ? theme.palette.grey[50]
+        : theme.palette.grey[900],
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
   paper: {
     margin: theme.spacing(8, 4),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
+    width: "100%",
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -80,77 +78,64 @@ const useStyles = makeStyles((theme) => ({
 
 const Auth: React.FC = () => {
   const classes = useStyles();
+
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [avatarImage, setAvatarImage] = useState<File | null>(null);
-
   const [isLogin, setIsLogin] = useState(true);
-  // モーダル
   const [openModal, setOpenModal] = React.useState(false);
-  // リセット用コンポーネント
   const [resetEmail, setResetEmail] = useState("");
-
-  // リセットEmail 関数
-  const sendResetEmail = async (e: React.MouseEvent<HTMLElement>) =>{
-    await auth
-    .sendPasswordResetEmail(resetEmail)
-    .then(()=> {
-      setOpenModal(false);
-      setResetEmail("");
-    })
-    .catch((err) =>{
-      alert(err.message);
-      setResetEmail("");
-    })
-  }
-
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]) {
       setAvatarImage(e.target.files![0]);
       e.target.value = "";
     }
   };
-
-  const signInGoogle =async ()=>{
-    await auth.signInWithPopup(provider).catch((err)=>alert(err.message));
-  }
-
-
-  // signin email
+  const sendResetEmail = async (e: React.MouseEvent<HTMLElement>) => {
+    await auth
+      .sendPasswordResetEmail(resetEmail)
+      .then(() => {
+        setOpenModal(false);
+        setResetEmail("");
+      })
+      .catch((err) => {
+        alert(err.message);
+        setResetEmail("");
+      });
+  };
+  const signInGoogle = async () => {
+    await auth.signInWithPopup(provider).catch((err) => alert(err.message));
+  };
   const signInEmail = async () => {
     await auth.signInWithEmailAndPassword(email, password);
   };
-
-  // signup email
-  const signUpEmail = async ()=>{
-  const authUser = await auth.createUserWithEmailAndPassword(email,password);
-  let url ="";
-  if(avatarImage){
-    const S =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const N =16;
-    const randomChar = Array.from(crypto.getRandomValues(new Uint32Array(N)))
-    .map((n) => S[n % S.length])
-    .join("");
-    const fileName =randomChar + "_" + avatarImage.name;
-    await storage.ref(`avatars/${fileName}`).put(avatarImage);
-    url = await storage.ref("avatars").child(fileName).getDownloadURL();
-  }
-  await authUser.user?.updateProfile({
-    displayName:username,
-    photoURL:url,
-  });
-  dispatch(
-    updateUserProfile({
-      displayName:username,
-      photoUrl:url,
-    })
-  );
-  }
-
-
+  const signUpEmail = async () => {
+    const authUser = await auth.createUserWithEmailAndPassword(email, password);
+    let url = "";
+    if (avatarImage) {
+      const S =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      const N = 16;
+      const randomChar = Array.from(crypto.getRandomValues(new Uint32Array(N)))
+        .map((n) => S[n % S.length])
+        .join("");
+      const fileName = randomChar + "_" + avatarImage.name;
+      await storage.ref(`avatars/${fileName}`).put(avatarImage);
+      url = await storage.ref("avatars").child(fileName).getDownloadURL();
+    }
+    await authUser.user?.updateProfile({
+      displayName: username,
+      photoURL: url,
+    });
+    dispatch(
+      updateUserProfile({
+        displayName: username,
+        photoUrl: url,
+      })
+    );
+  };
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -162,13 +147,12 @@ const Auth: React.FC = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-           {isLogin ? "Login" : "Register"}
+            {isLogin ? "Login" : "Register"}
           </Typography>
           <form className={classes.form} noValidate>
-
             {!isLogin && (
-            <>
-              <TextField
+              <>
+                <TextField
                   variant="outlined"
                   margin="normal"
                   required
@@ -183,9 +167,10 @@ const Auth: React.FC = () => {
                     setUsername(e.target.value);
                   }}
                 />
-                <Grid container direction="column" alignItems="center">
+
+              <Grid container direction="column" alignItems="center">
                 <Box>
-                <IconButton>
+                  <IconButton>
                     <label>
                       <AccountCircleIcon
                         fontSize="large"
@@ -203,10 +188,10 @@ const Auth: React.FC = () => {
                     </label>
                   </IconButton>
                 </Box>
-                </Grid>
-
-            </>
+              </Grid>
+              </>
             )}
+            
             <TextField
               variant="outlined"
               margin="normal"
@@ -217,9 +202,9 @@ const Auth: React.FC = () => {
               name="email"
               autoComplete="email"
               value={email}
-              onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{
-                setEmail(e.target.value)}}
-
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setEmail(e.target.value);
+              }}
             />
             <TextField
               variant="outlined"
@@ -231,54 +216,45 @@ const Auth: React.FC = () => {
               type="password"
               id="password"
               autoComplete="current-password"
-
               value={password}
-              onChange={(e:React.ChangeEvent<HTMLInputElement>)=>{
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setPassword(e.target.value);
-              }
-              }
-
+              }}
             />
 
             <Button
-            disabled={
-              isLogin
-               ? !email || password.length < 6
-               :! username || !email || password.length < 6 ||!avatarImage
-            }
-
-
+              disabled={
+                isLogin
+                  ? !email || password.length < 6
+                  : !username || !email || password.length < 6 || !avatarImage
+              }
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
-              startIcon={<EmailIcon/>}
-
-              // onclick
+              startIcon={<EmailIcon />}
               onClick={
-                isLogin ? async () =>{
-                  try{
-                    await signInEmail();
-                  }catch (err:any){
-                    alert(err.message);
-                  }
-                }
-                :async()=>{
-                  try{
-                    await signUpEmail();
-                  }catch(err:any){
-                    alert(err.message);
-                  }
-                }
+                isLogin
+                  ? async () => {
+                      try {
+                        await signInEmail();
+                      } catch (err:any) {
+                        alert(err.message);
+                      }
+                    }
+                  : async () => {
+                      try {
+                        await signUpEmail();
+                      } catch (err:any) {
+                        alert(err.message);
+                      }
+                    }
               }
-
-            
             >
               {isLogin ? "Login" : "Register"}
             </Button>
-
             <Grid container>
-           <Grid item xs>
+              <Grid item xs>
                 <span
                   className={styles.login_reset}
                   onClick={() => setOpenModal(true)}
@@ -287,22 +263,24 @@ const Auth: React.FC = () => {
                 </span>
               </Grid>
               <Grid item>
-                <span 
-                className={styles.login_toggleMode}
-                onClick={() => setIsLogin(!isLogin)}>
-                  {isLogin ? "Create new account ?" : "Back to login"}</span>
+                <span
+                  className={styles.login_toggleMode}
+                  onClick={() => setIsLogin(!isLogin)}
+                >
+                  {isLogin ? "Create new account ?" : "Back to login"}
+                </span>
               </Grid>
             </Grid>
 
             <Button
               fullWidth
               variant="contained"
-              color="primary"
-              startIcon={<CameraIcon />}
+              color="default"
               className={classes.submit}
+              startIcon={<CameraIcon />}
               onClick={signInGoogle}
             >
-              Sign In with Google
+              SignIn with Google
             </Button>
           </form>
 
@@ -331,5 +309,5 @@ const Auth: React.FC = () => {
       </Grid>
     </Grid>
   );
-}
+};
 export default Auth;
